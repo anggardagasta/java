@@ -1,6 +1,7 @@
 package rest;
 
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  *
@@ -13,7 +14,11 @@ public class Rest {
         config.Connection();
 
         Model model = new Model(config.getConn());
-        model.AllUsers();
+        List<UserMapping> allUsers = model.AllUsers();
+
+        allUsers.forEach((UserMapping user) -> {
+            System.out.format("%s, %s, %s, %s\n", user.getId(), user.getFullName(), user.getRememberToken(), user.getUpdatedAt());
+        });
     }
 
 }

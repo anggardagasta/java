@@ -14,9 +14,9 @@ public class Config {
 
     public void Connection() {
         try {
-            String url = "jdbc:mysql://localhost/database";
+            String url = "jdbc:mysql://localhost/jireh";
             String user = "root";
-            String pass = "";
+            String pass = "tiffany";
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection(url, user, pass);
         } catch (ClassNotFoundException | SQLException e) {

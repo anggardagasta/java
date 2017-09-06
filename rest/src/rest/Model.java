@@ -4,7 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -18,35 +19,52 @@ public class Model {
         this.conn = conn;
     }
 
-    public void AllUsers() throws SQLException {
+    public List<UserMapping> AllUsers() throws SQLException {
+        ResultSet rs = null;
+        Statement st = null;
+        List<UserMapping> users = new ArrayList<>();
         try {
             // our SQL SELECT query. 
-            // if you only need a few columns, specify them by name instead of using "*"
             String query = "SELECT * FROM users";
-
             // execute the query, and get a java resultset
-            try ( // create the java statement
-                    Statement st = this.getConn().createStatement()) {
-                // execute the query, and get a java resultset
-                ResultSet rs = st.executeQuery(query);
+            st = this.getConn().createStatement();
+            // execute the query, and get a java resultset
+            rs = st.executeQuery(query);
 
-                // iterate through the java resultset
-                while (rs.next()) {
-                    int id = rs.getInt("id");
-                    String fullName = rs.getString("nama_lengkap");
-                    String rememberToken = rs.getString("remember_token");
-                    Date createdAt = rs.getDate("updated_at");
-//                boolean isAdmin = rs.getBoolean("is_admin");
-//                int numPoints = rs.getInt("num_points");
-//
-//                // print the results
-                    System.out.format("%s, %s, %s, %s\n", id, fullName, rememberToken, createdAt);
+            while (rs.next()) {
+                UserMapping user = new UserMapping();
+                user.setId(rs.getInt("id"));
+                user.setFullName(rs.getString("nama_lengkap"));
+                user.setRememberToken(rs.getString("remember_token"));
+                user.setUpdatedAt(rs.getDate("updated_at"));
+                users.add(user);
+            }
+
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException ex) {
+                    System.err.println(ex.getMessage());
                 }
             }
-        } catch (SQLException e) {
-            System.err.println("Got an exception! ");
-            System.err.println(e.getMessage());
+            if (st != null) {
+                try {
+                    st.close();
+                } catch (SQLException ex) {
+                    System.err.println(ex.getMessage());
+                }
+            }
+            if (this.getConn() != null) {
+                try {
+                    this.getConn().close();
+                } catch (SQLException ex) {
+                    System.err.println(ex.getMessage());
+                }
+            }
         }
+
+        return users;
     }
 
     public Connection getConn() {
